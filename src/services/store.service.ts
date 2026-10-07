@@ -89,7 +89,7 @@ export class WorkwenchStore {
     }
 
     /** Quick-card glass tunables (clamped); partial update in one commit. */
-    setGlass (patch: Partial<Pick<WorkwenchConfig, 'glassOpacity' | 'glassBlur' | 'glassBrightness'>>): void {
+    setGlass (patch: Partial<Pick<WorkwenchConfig, 'glassBlurEnabled' | 'glassOpacity' | 'glassBlur' | 'glassBrightness'>>): void {
         const merged = { ...this.model, ...patch }
         const glass = normalizeGlass({
             opacity: merged.glassOpacity,
@@ -98,6 +98,7 @@ export class WorkwenchStore {
         })
         this.commit({
             ...this.model,
+            glassBlurEnabled: merged.glassBlurEnabled === true,
             glassOpacity: glass.opacity,
             glassBlur: glass.blur,
             glassBrightness: glass.brightness,
@@ -415,6 +416,7 @@ export class WorkwenchStore {
         target.openDefault = model.openDefault
         target.paletteGrouped = model.paletteGrouped
         target.glassOpacity = model.glassOpacity
+        target.glassBlurEnabled = model.glassBlurEnabled
         target.glassBlur = model.glassBlur
         target.glassBrightness = model.glassBrightness
         target.sidebarTransparent = model.sidebarTransparent

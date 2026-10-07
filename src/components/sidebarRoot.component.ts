@@ -62,7 +62,7 @@ export class SidebarRootComponent implements OnDestroy {
     private applyStyleVars (model: WorkwenchConfig): void {
         const body = document.body.style
         body.setProperty('--twx-glass-opacity', String(model.glassOpacity))
-        body.setProperty('--twx-glass-blur', `${model.glassBlur}px`)
+        body.setProperty('--twx-glass-blur', `${model.glassBlurEnabled ? model.glassBlur : 0}px`)
         body.setProperty('--twx-glass-brightness', String(model.glassBrightness))
         // Translucent mask: the chosen base colour at the chosen opacity;
         // opaque mode keeps the theme default (var unset → CSS fallback).

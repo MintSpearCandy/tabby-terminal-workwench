@@ -61,6 +61,8 @@ export interface WorkwenchConfig {
     /** Quick-card frosted glass: how much snippet colour tints the card
      *  background (0–1). */
     glassOpacity: number
+    /** Quick-card frosted glass: blur enabled (radius below applies only when on). */
+    glassBlurEnabled: boolean
     /** Quick-card frosted glass: backdrop blur radius in px (0–40). */
     glassBlur: number
     /** Quick-card frosted glass: backdrop brightness factor (0.2–2). */

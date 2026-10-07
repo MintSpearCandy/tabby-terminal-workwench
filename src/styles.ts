@@ -437,6 +437,22 @@ export const GLOBAL_STYLES = `
     .twx-settings .hint {
         margin: 0; color: var(--twx-fg-muted); font-size: 12px; line-height: 1.5;
     }
+    /* Settings tabs (snippet management / panel settings) */
+    .twx-settings-tabs {
+        display: flex; gap: 4px; margin-bottom: 14px;
+        border-bottom: 1px solid var(--twx-border);
+    }
+    .twx-settings-tab {
+        padding: 7px 14px 8px; margin-bottom: -1px; border: 0;
+        border-bottom: 2px solid transparent; border-radius: 6px 6px 0 0;
+        color: var(--twx-fg-muted); background: transparent; cursor: pointer;
+        font-size: 13px; font-family: inherit;
+    }
+    .twx-settings-tab:hover { color: var(--twx-fg); }
+    .twx-settings-tab.is-active {
+        color: var(--twx-fg-emphasis);
+        border-bottom-color: var(--twx-accent);
+    }
     /* Same recipe as tabby-settings' collapse-container / collapse-item
      * (component-scoped there, so replicated here against twx tokens). */
     .twx-collapse-container { border-radius: 0.375rem; }

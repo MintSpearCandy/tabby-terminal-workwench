@@ -57,10 +57,10 @@ const {
 
 const emptyResult = model.normalizeConfig({})
 assert.equal(emptyResult.version, 2)
-assert.equal(emptyResult.enabled, true)
-assert.equal(emptyResult.openDefault, true)
+assert.equal(emptyResult.enabled, false)
+assert.equal(emptyResult.openDefault, false)
 assert.equal(emptyResult.paletteGrouped, false)
-assert.equal(emptyResult.open, true)
+assert.equal(emptyResult.open, false)
 assert.equal(emptyResult.categories, undefined)
 assert.equal(emptyResult.scenes.length, 2)
 assert.ok(emptyResult.scenes[0].buttons.length > 0)
@@ -230,6 +230,7 @@ console.log('model normalization tests passed')
 // ── glass tunables clamp ────────────────────────────────────────────────
 
 assert.equal(emptyResult.glassOpacity, 0.15)
+assert.equal(emptyResult.glassBlurEnabled, false)
 assert.equal(emptyResult.glassBlur, 8)
 assert.equal(emptyResult.glassBrightness, 1)
 const glass = model.normalizeConfig({
@@ -247,9 +248,9 @@ assert.deepEqual(
 
 // ── sidebar translucent-mask style ──────────────────────────────────────
 
-assert.equal(emptyResult.sidebarTransparent, false)
-assert.equal(emptyResult.sidebarOpacity, 0.85)
-assert.equal(emptyResult.sidebarColor, '#111b2c')
+assert.equal(emptyResult.sidebarTransparent, true)
+assert.equal(emptyResult.sidebarOpacity, 0.03)
+assert.equal(emptyResult.sidebarColor, '#808080')
 const maskOn = model.normalizeConfig({
     scenes: [{ id: 'x' }],
     sidebarTransparent: true, sidebarOpacity: 9, sidebarColor: '#ABCDEF',
@@ -260,8 +261,8 @@ assert.deepEqual(
 )
 const maskBad = model.normalizeConfig({ scenes: [{ id: 'x' }], sidebarOpacity: -1, sidebarColor: 'red' })
 assert.equal(maskBad.sidebarOpacity, 0)
-assert.equal(maskBad.sidebarColor, '#111b2c')
-assert.equal(model.normalizeConfig({ paletteGrouped: true }).sidebarTransparent, false)
+assert.equal(maskBad.sidebarColor, '#808080')
+assert.equal(model.normalizeConfig({ paletteGrouped: true }).sidebarTransparent, true)
 
 // ── sidebarWidth clamp ─────────────────────────────────────────────────
 

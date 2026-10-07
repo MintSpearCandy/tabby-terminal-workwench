@@ -105,15 +105,16 @@ export function createDefaultConfig (): WorkwenchConfig {
     const scenes = createDefaultScenes()
     return {
         version: 2,
-        enabled: true,
-        openDefault: true,
+        enabled: false,
+        openDefault: false,
         paletteGrouped: false,
         glassOpacity: 0.15,
+        glassBlurEnabled: false,
         glassBlur: 8,
         glassBrightness: 1,
-        sidebarTransparent: false,
-        sidebarOpacity: 0.85,
-        sidebarColor: '#111b2c',
+        sidebarTransparent: true,
+        sidebarOpacity: 0.03,
+        sidebarColor: '#808080',
         open: true,
         width: DEFAULT_SIDEBAR_WIDTH,
         activeSceneId: scenes[0].id,
@@ -204,7 +205,7 @@ export interface SidebarStyleSettings {
     color: string
 }
 
-const SIDEBAR_DEFAULT_COLOR = '#111b2c'
+const SIDEBAR_DEFAULT_COLOR = '#808080'
 
 export function normalizeSidebarStyle (raw: any): SidebarStyleSettings {
     const num = (value: any, min: number, max: number, fallback: number): number => {
@@ -212,8 +213,8 @@ export function normalizeSidebarStyle (raw: any): SidebarStyleSettings {
         return Number.isFinite(parsed) ? Math.min(max, Math.max(min, parsed)) : fallback
     }
     return {
-        transparent: raw?.transparent === true,
-        opacity: num(raw?.opacity, 0, 1, 0.85),
+        transparent: raw?.transparent !== false,
+        opacity: num(raw?.opacity, 0, 1, 0.03),
         color: /^#[0-9a-f]{6}$/i.test(String(raw?.color)) ? String(raw?.color).toLowerCase() : SIDEBAR_DEFAULT_COLOR,
     }
 }
@@ -227,7 +228,7 @@ export function normalizeConfig (raw: any): WorkwenchConfig {
         if (!scenes.length) {
             scenes = [...scenes, ...createDefaultScenes()]
         }
-        const openDefault = raw.openDefault !== false
+        const openDefault = raw.openDefault === true
         const glass = normalizeGlass({
             opacity: raw.glassOpacity,
             blur: raw.glassBlur,
@@ -240,10 +241,11 @@ export function normalizeConfig (raw: any): WorkwenchConfig {
         })
         return {
             version: 2,
-            enabled: raw.enabled !== false,
-            openDefault,
+            enabled: raw.enabled === true,
+            openDefault: openDefault,
             paletteGrouped: raw.paletteGrouped === true,
             glassOpacity: glass.opacity,
+            glassBlurEnabled: raw.glassBlurEnabled === true,
             glassBlur: glass.blur,
             glassBrightness: glass.brightness,
             sidebarTransparent: sidebarStyle.transparent,
@@ -274,16 +276,17 @@ export function normalizeConfig (raw: any): WorkwenchConfig {
     })
     return {
         ...createDefaultConfig(),
-        enabled: raw?.enabled !== false,
-        openDefault: raw?.openDefault !== false,
+        enabled: raw?.enabled === true,
+        openDefault: raw?.openDefault === true,
         paletteGrouped: raw?.paletteGrouped === true,
         glassOpacity: glassFallback.opacity,
+        glassBlurEnabled: raw?.glassBlurEnabled === true,
         glassBlur: glassFallback.blur,
         glassBrightness: glassFallback.brightness,
         sidebarTransparent: sidebarFallback.transparent,
         sidebarOpacity: sidebarFallback.opacity,
         sidebarColor: sidebarFallback.color,
-        open: raw?.openDefault !== false,
+        open: raw?.openDefault === true,
     }
 }
 

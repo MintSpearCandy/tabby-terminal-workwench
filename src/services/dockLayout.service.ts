@@ -20,12 +20,24 @@ export class DockLayoutService {
         private bridge: TerminalBridgeService,
     ) { }
 
+    private resizeRetryTimer: ReturnType<typeof setTimeout> | null = null
+
     applyState (model: Pick<WorkwenchConfig, 'enabled' | 'open' | 'width' | 'sidebarTransparent'>): void {
         const docked = model.enabled && model.open
         document.body.classList.toggle('twx-docked', docked)
-        // Translucent-mask mode: the sidebar floats over the terminal instead
-        // of docking beside it — the page keeps full width and shows through.
+        // Mask mode only changes what the sidebar sits on (the window
+        // background layer, not its own underlay) — the terminal panes are
+        // always squeezed aside, never covered.
         document.body.classList.toggle('twx-overlay', docked && model.sidebarTransparent)
+        // Window-background layer for the (possibly translucent) sidebar and
+        // any docked seam.  Tabby pins body transparent with !important, so
+        // this needs the inline+important trump card; wallpaper-type themes
+        // paint above body and still show through a translucent sidebar.
+        if (docked) {
+            document.body.style.setProperty('background-color', 'var(--twx-bg-deep)', 'important')
+        } else {
+            document.body.style.removeProperty('background-color')
+        }
         this.applyTopOffset()
         if (docked) {
             this.applyWidth(model.width)
@@ -34,6 +46,30 @@ export class DockLayoutService {
             this.clearContentResize()
         }
         this.scheduleLayoutRefresh()
+        this.scheduleResizeRetry(docked)
+    }
+
+    /**
+     * The first applyState can run before Tabby restores its tabs, when the
+     * content-container lookup finds nothing — retry once after the restore
+     * window so the squeeze actually lands.
+     */
+    private scheduleResizeRetry (docked: boolean): void {
+        if (this.resizeRetryTimer !== null) {
+            clearTimeout(this.resizeRetryTimer)
+            this.resizeRetryTimer = null
+        }
+        if (!docked) {
+            return
+        }
+        this.resizeRetryTimer = setTimeout(() => {
+            this.resizeRetryTimer = null
+            const widthVar = document.body.style.getPropertyValue('--twx-width')
+            if (widthVar) {
+                this.resizeContentContainer(parseInt(widthVar, 10))
+                this.scheduleLayoutRefresh()
+            }
+        }, 1500)
     }
 
     /**
@@ -52,15 +88,10 @@ export class DockLayoutService {
         document.body.style.setProperty('--twx-top', `${top}px`)
     }
 
-    /** Continuous width application during a drag; persistence is the caller's job.
-     *  Overlay mode never shrinks the page — the sidebar just gets wider. */
+    /** Continuous width application during a drag; persistence is the caller's job. */
     applyWidth (width: number): void {
         const clamped = this.clampWidth(width)
         document.body.style.setProperty('--twx-width', `${clamped}px`)
-        if (document.body.classList.contains('twx-overlay')) {
-            this.clearContentResize()
-            return
-        }
         this.resizeContentContainer(clamped)
     }
 

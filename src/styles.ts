@@ -12,6 +12,9 @@ export const GLOBAL_STYLES = `
     .twx-root, .twx-root * { box-sizing: border-box; }
 
     /* ── Docking: make the main window leave room for the sidebar ── */
+    /* The window-background layer itself is painted inline on body by the
+     * DockLayoutService (docked → var(--twx-bg-deep)), so a translucent
+     * sidebar sits on it and wallpaper-type themes can paint over it. */
     body.twx-docked app-root {
         width: 100vw !important;
         max-width: 100vw !important;
@@ -57,13 +60,11 @@ export const GLOBAL_STYLES = `
         content: ""; position: absolute; inset: 0; z-index: -1;
         background: var(--twx-sidebar-underlay, var(--twx-bg-deep));
     }
-    /* Translucent-mask mode: the sidebar floats over the full-width page —
-     * drop the underlay (the page itself shows through the mask) and frost
-     * whatever is underneath (blur shared with the quick-card glass setting). */
+    /* Mask mode: drop the sidebar's own underlay — the translucent root then
+     * sits directly on the window-background layer painted on body (theme
+     * colour, or a wallpaper painted there by theme plugins).  Terminal
+     * panes stay squeezed beside the sidebar; nothing is covered. */
     body.twx-overlay .twx-root::before { display: none; }
-    body.twx-overlay .twx-root {
-        backdrop-filter: blur(var(--twx-glass-blur, 8px));
-    }
     .twx-resize-handle {
         position: absolute; top: 0; bottom: 0; left: -4px; z-index: 3;
         width: 8px; cursor: col-resize; touch-action: none;

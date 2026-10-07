@@ -1,6 +1,6 @@
 {
   "name": "tabby-terminal-workwench",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A scene-based terminal work sidebar with quick buttons and scratchpads for Tabby, managed from the settings page.",
   "keywords": [
     "tabby-plugin",

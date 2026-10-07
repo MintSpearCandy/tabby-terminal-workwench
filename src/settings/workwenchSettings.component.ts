@@ -72,6 +72,29 @@ interface SceneEntry {
                        [ngModel]="glassBrightness" (ngModelChange)="setGlass('glassBrightness', $event)" />
             </div>
 
+            <div class="form-line">
+                <div class="header">
+                    <div class="title">侧边栏背景透明遮罩</div>
+                    <div class="description">开启后侧边栏以半透明底色覆盖显示（关闭时使用主题默认背景）；透明度与底色在下方调整，改动即时生效。</div>
+                </div>
+                <toggle [ngModel]="sidebarTransparent" (ngModelChange)="setSidebarStyle('sidebarTransparent', $event)"></toggle>
+            </div>
+            <div class="form-line" *ngIf="sidebarTransparent">
+                <div class="header">
+                    <div class="title">侧边栏 · 背景透明度</div>
+                    <div class="description">底色的不透明度，0–1（0 近乎全透明）。</div>
+                </div>
+                <input type="number" class="form-control" min="0" max="1" step="0.05"
+                       [ngModel]="sidebarOpacity" (ngModelChange)="setSidebarStyle('sidebarOpacity', $event)" />
+            </div>
+            <div class="form-line mb-3" *ngIf="sidebarTransparent">
+                <div class="header">
+                    <div class="title">侧边栏 · 底色</div>
+                    <div class="description">遮罩的基础颜色。</div>
+                </div>
+                <twx-color-swatches [color]="sidebarColor" (colorChange)="setSidebarStyle('sidebarColor', $event)"></twx-color-swatches>
+            </div>
+
             <div class="d-flex mb-3">
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-fw fa-search"></i></span>
@@ -134,6 +157,9 @@ export class WorkwenchSettingsComponent implements OnDestroy {
     glassOpacity = 0.15
     glassBlur = 8
     glassBrightness = 1
+    sidebarTransparent = false
+    sidebarOpacity = 0.85
+    sidebarColor = '#111b2c'
     scenes: Scene[] = []
     view: SceneEntry[] = []
     activeSceneId = ''
@@ -148,6 +174,9 @@ export class WorkwenchSettingsComponent implements OnDestroy {
         this.glassOpacity = config.glassOpacity
         this.glassBlur = config.glassBlur
         this.glassBrightness = config.glassBrightness
+        this.sidebarTransparent = config.sidebarTransparent
+        this.sidebarOpacity = config.sidebarOpacity
+        this.sidebarColor = config.sidebarColor
         this.rebuildView()
     })
 
@@ -180,6 +209,18 @@ export class WorkwenchSettingsComponent implements OnDestroy {
             return
         }
         this.store.setGlass({ [key]: parsed } as any)
+    }
+
+    /** Sidebar-mask style commit (toggle / opacity / colour). */
+    setSidebarStyle (key: 'sidebarTransparent' | 'sidebarOpacity' | 'sidebarColor', value: number | string | boolean): void {
+        let parsed: number | string | boolean = value
+        if (key === 'sidebarOpacity') {
+            parsed = Number(value)
+            if (!Number.isFinite(parsed as number)) {
+                return
+            }
+        }
+        this.store.setSidebarStyle({ [key]: parsed } as any)
     }
 
     /** One unified creation entry, like the profiles page's New dropdown. */

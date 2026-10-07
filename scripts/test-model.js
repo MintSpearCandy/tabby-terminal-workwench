@@ -245,6 +245,24 @@ assert.deepEqual(
     [0.4, 20, 1.5],
 )
 
+// ── sidebar translucent-mask style ──────────────────────────────────────
+
+assert.equal(emptyResult.sidebarTransparent, false)
+assert.equal(emptyResult.sidebarOpacity, 0.85)
+assert.equal(emptyResult.sidebarColor, '#111b2c')
+const maskOn = model.normalizeConfig({
+    scenes: [{ id: 'x' }],
+    sidebarTransparent: true, sidebarOpacity: 9, sidebarColor: '#ABCDEF',
+})
+assert.deepEqual(
+    [maskOn.sidebarTransparent, maskOn.sidebarOpacity, maskOn.sidebarColor],
+    [true, 1, '#abcdef'],
+)
+const maskBad = model.normalizeConfig({ scenes: [{ id: 'x' }], sidebarOpacity: -1, sidebarColor: 'red' })
+assert.equal(maskBad.sidebarOpacity, 0)
+assert.equal(maskBad.sidebarColor, '#111b2c')
+assert.equal(model.normalizeConfig({ paletteGrouped: true }).sidebarTransparent, false)
+
 // ── sidebarWidth clamp ─────────────────────────────────────────────────
 
 assert.equal(model.normalizeConfig({ scenes: [{ id: 'x' }], width: 200 }).width, MIN_SIDEBAR_WIDTH)

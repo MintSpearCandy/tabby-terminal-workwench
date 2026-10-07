@@ -55,15 +55,25 @@ export class SidebarRootComponent implements OnDestroy {
     sequenceRunning = false
     private readonly subscription = this.store.config$.subscribe(model => {
         this.visible = model.enabled && model.open
-        this.applyGlassVars(model)
+        this.applyStyleVars(model)
     })
 
-    /** Glass tunables drive the quick cards through body-level CSS vars. */
-    private applyGlassVars (model: WorkwenchConfig): void {
+    /** Glass / sidebar-mask tunables drive the CSS through body-level vars. */
+    private applyStyleVars (model: WorkwenchConfig): void {
         const body = document.body.style
         body.setProperty('--twx-glass-opacity', String(model.glassOpacity))
         body.setProperty('--twx-glass-blur', `${model.glassBlur}px`)
         body.setProperty('--twx-glass-brightness', String(model.glassBrightness))
+        // Translucent mask: the chosen base colour at the chosen opacity;
+        // opaque mode keeps the theme default (var unset → CSS fallback).
+        body.removeProperty('--twx-sidebar-bg')
+        if (model.sidebarTransparent) {
+            const hex = /^#[0-9a-f]{6}$/i.test(model.sidebarColor) ? model.sidebarColor : '#111b2c'
+            const r = parseInt(hex.slice(1, 3), 16)
+            const g = parseInt(hex.slice(3, 5), 16)
+            const b = parseInt(hex.slice(5, 7), 16)
+            body.setProperty('--twx-sidebar-bg', `rgba(${r}, ${g}, ${b}, ${model.sidebarOpacity})`)
+        }
     }
 
     constructor (

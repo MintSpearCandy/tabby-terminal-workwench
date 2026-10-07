@@ -43,9 +43,19 @@ export const GLOBAL_STYLES = `
         flex-direction: column; overflow: hidden;
         container-type: inline-size;
         border-left: 1px solid var(--twx-border-strong);
-        color: var(--twx-fg); background: var(--twx-bg-deep);
+        color: var(--twx-fg); background: var(--twx-sidebar-bg, var(--twx-bg-deep));
         box-shadow: -14px 0 30px var(--twx-shadow-sm);
         font-family: Inter, "Segoe UI", sans-serif; -webkit-app-region: no-drag;
+    }
+    /* Window-background layer under the translucent mask: the element chain
+     * below the sidebar is fully transparent (Tabby paints no body
+     * background), so at mask opacity 0 the raw white Electron window would
+     * show through — pin the theme's deepest background inside the sidebar
+     * bounds instead (z-index -1 stays trapped in the root's stacking
+     * context, so nothing outside the sidebar is affected). */
+    .twx-root::before {
+        content: ""; position: absolute; inset: 0; z-index: -1;
+        background: var(--twx-sidebar-underlay, var(--twx-bg-deep));
     }
     .twx-resize-handle {
         position: absolute; top: 0; bottom: 0; left: -4px; z-index: 3;
@@ -87,7 +97,7 @@ export const GLOBAL_STYLES = `
     /* ── Scene tabs (Chrome-style strip) ── */
     .twx-scene-strip {
         display: flex; flex: 0 0 auto;
-        background: color-mix(in srgb, var(--twx-fg) 4%, var(--twx-bg-deep));
+        background: color-mix(in srgb, var(--twx-fg) 4%, transparent);
         border-bottom: 1px solid var(--twx-border);
     }
     /* No scrollbar-width override (that would disable the ::-webkit-scrollbar
@@ -120,7 +130,7 @@ export const GLOBAL_STYLES = `
     }
     .twx-scene-tab.is-active {
         color: var(--twx-fg-emphasis);
-        background: var(--twx-bg-deep);
+        background: var(--twx-sidebar-bg, var(--twx-bg-deep));
     }
     /* Chrome-tab shoulder curves: fill with the active-tab (= panel) bg */
     .twx-scene-tab.is-active::before,
@@ -130,11 +140,11 @@ export const GLOBAL_STYLES = `
     }
     .twx-scene-tab.is-active::before {
         left: -8px; border-bottom-right-radius: 8px;
-        box-shadow: 4px 4px 0 0 var(--twx-bg-deep);
+        box-shadow: 4px 4px 0 0 var(--twx-sidebar-bg, var(--twx-bg-deep));
     }
     .twx-scene-tab.is-active::after {
         right: -8px; border-bottom-left-radius: 8px;
-        box-shadow: -4px 4px 0 0 var(--twx-bg-deep);
+        box-shadow: -4px 4px 0 0 var(--twx-sidebar-bg, var(--twx-bg-deep));
     }
     /* Scene icon left of the tab title, painted with the exact scene colour
      * (replaced the former top colour line). */
@@ -199,7 +209,7 @@ export const GLOBAL_STYLES = `
     }
     .twx-quick-card.is-dangerous {
         border-color: var(--twx-danger);
-        background: color-mix(in srgb, var(--twx-danger) 8%, var(--twx-bg));
+        background: color-mix(in srgb, var(--twx-danger) 8%, transparent);
         box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--twx-danger) 25%, transparent);
     }
     .twx-quick-card.is-dragging * { cursor: grabbing !important; }
@@ -246,7 +256,7 @@ export const GLOBAL_STYLES = `
         width: 100%; height: 100%; min-height: 0;
         padding: 12px; resize: none;
         border: 1px solid var(--twx-border-strong); border-radius: 8px;
-        color: var(--twx-fg-emphasis); background: var(--twx-bg-deep);
+        color: var(--twx-fg-emphasis); background: var(--twx-sidebar-bg, var(--twx-bg-deep));
         font: 13px/1.65 "JetBrains Mono", Consolas, monospace;
         tab-size: 4;
     }

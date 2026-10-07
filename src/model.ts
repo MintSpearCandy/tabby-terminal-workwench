@@ -111,6 +111,9 @@ export function createDefaultConfig (): WorkwenchConfig {
         glassOpacity: 0.15,
         glassBlur: 8,
         glassBrightness: 1,
+        sidebarTransparent: false,
+        sidebarOpacity: 0.85,
+        sidebarColor: '#111b2c',
         open: true,
         width: DEFAULT_SIDEBAR_WIDTH,
         activeSceneId: scenes[0].id,
@@ -194,6 +197,27 @@ export function normalizeGlass (raw: any): GlassSettings {
     }
 }
 
+/** Sidebar translucent-mask style settings. */
+export interface SidebarStyleSettings {
+    transparent: boolean
+    opacity: number
+    color: string
+}
+
+const SIDEBAR_DEFAULT_COLOR = '#111b2c'
+
+export function normalizeSidebarStyle (raw: any): SidebarStyleSettings {
+    const num = (value: any, min: number, max: number, fallback: number): number => {
+        const parsed = Number(value)
+        return Number.isFinite(parsed) ? Math.min(max, Math.max(min, parsed)) : fallback
+    }
+    return {
+        transparent: raw?.transparent === true,
+        opacity: num(raw?.opacity, 0, 1, 0.85),
+        color: /^#[0-9a-f]{6}$/i.test(String(raw?.color)) ? String(raw?.color).toLowerCase() : SIDEBAR_DEFAULT_COLOR,
+    }
+}
+
 export function normalizeConfig (raw: any): WorkwenchConfig {
     if (Array.isArray(raw?.scenes)) {
         // The virtual ungrouped scene only exists while it holds content.
@@ -209,6 +233,11 @@ export function normalizeConfig (raw: any): WorkwenchConfig {
             blur: raw.glassBlur,
             brightness: raw.glassBrightness,
         })
+        const sidebarStyle = normalizeSidebarStyle({
+            transparent: raw.sidebarTransparent,
+            opacity: raw.sidebarOpacity,
+            color: raw.sidebarColor,
+        })
         return {
             version: 2,
             enabled: raw.enabled !== false,
@@ -217,6 +246,9 @@ export function normalizeConfig (raw: any): WorkwenchConfig {
             glassOpacity: glass.opacity,
             glassBlur: glass.blur,
             glassBrightness: glass.brightness,
+            sidebarTransparent: sidebarStyle.transparent,
+            sidebarOpacity: sidebarStyle.opacity,
+            sidebarColor: sidebarStyle.color,
             // Session state starts from the persisted startup default.
             open: openDefault,
             width: clampWidth(raw.width),
@@ -235,6 +267,11 @@ export function normalizeConfig (raw: any): WorkwenchConfig {
         blur: raw?.glassBlur,
         brightness: raw?.glassBrightness,
     })
+    const sidebarFallback = normalizeSidebarStyle({
+        transparent: raw?.sidebarTransparent,
+        opacity: raw?.sidebarOpacity,
+        color: raw?.sidebarColor,
+    })
     return {
         ...createDefaultConfig(),
         enabled: raw?.enabled !== false,
@@ -243,6 +280,9 @@ export function normalizeConfig (raw: any): WorkwenchConfig {
         glassOpacity: glassFallback.opacity,
         glassBlur: glassFallback.blur,
         glassBrightness: glassFallback.brightness,
+        sidebarTransparent: sidebarFallback.transparent,
+        sidebarOpacity: sidebarFallback.opacity,
+        sidebarColor: sidebarFallback.color,
         open: raw?.openDefault !== false,
     }
 }

@@ -65,6 +65,12 @@ export interface WorkwenchConfig {
     glassBlur: number
     /** Quick-card frosted glass: backdrop brightness factor (0.2–2). */
     glassBrightness: number
+    /** Sidebar background as a translucent mask over the window. */
+    sidebarTransparent: boolean
+    /** Sidebar mask opacity (0–1), applied in transparent mode. */
+    sidebarOpacity: number
+    /** Sidebar mask base colour (#rrggbb), applied in transparent mode. */
+    sidebarColor: string
     /** Session-only visibility, controlled by the toolbar button / sidebar
      *  close button.  Never persisted; initialized from openDefault. */
     open: boolean

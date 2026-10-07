@@ -3,7 +3,7 @@ import { ConfigService } from 'tabby-core'
 import * as yaml from 'js-yaml'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { CONFIG_KEY, WORKBENCH_SOURCE_KEY } from '../configKeys'
-import { clampWidth, createDefaultConfig, createId, isSceneVisible, needsV2Migration, normalizeConfig, normalizeGlass } from '../model'
+import { clampWidth, createDefaultConfig, createId, isSceneVisible, needsV2Migration, normalizeConfig, normalizeGlass, normalizeSidebarStyle } from '../model'
 import { decideWorkbenchImport } from '../workbenchImport'
 import { QuickButton, Scene, Snippet, WorkwenchConfig } from '../types'
 import {
@@ -101,6 +101,22 @@ export class WorkwenchStore {
             glassOpacity: glass.opacity,
             glassBlur: glass.blur,
             glassBrightness: glass.brightness,
+        })
+    }
+
+    /** Sidebar translucent-mask style; partial update in one commit. */
+    setSidebarStyle (patch: Partial<Pick<WorkwenchConfig, 'sidebarTransparent' | 'sidebarOpacity' | 'sidebarColor'>>): void {
+        const merged = { ...this.model, ...patch }
+        const style = normalizeSidebarStyle({
+            transparent: merged.sidebarTransparent,
+            opacity: merged.sidebarOpacity,
+            color: merged.sidebarColor,
+        })
+        this.commit({
+            ...this.model,
+            sidebarTransparent: style.transparent,
+            sidebarOpacity: style.opacity,
+            sidebarColor: style.color,
         })
     }
 
@@ -401,6 +417,9 @@ export class WorkwenchStore {
         target.glassOpacity = model.glassOpacity
         target.glassBlur = model.glassBlur
         target.glassBrightness = model.glassBrightness
+        target.sidebarTransparent = model.sidebarTransparent
+        target.sidebarOpacity = model.sidebarOpacity
+        target.sidebarColor = model.sidebarColor
         target.width = model.width
         target.activeSceneId = model.activeSceneId
         target.importedFromWorkbench = model.importedFromWorkbench

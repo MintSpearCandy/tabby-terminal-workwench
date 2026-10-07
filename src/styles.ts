@@ -57,6 +57,13 @@ export const GLOBAL_STYLES = `
         content: ""; position: absolute; inset: 0; z-index: -1;
         background: var(--twx-sidebar-underlay, var(--twx-bg-deep));
     }
+    /* Translucent-mask mode: the sidebar floats over the full-width page —
+     * drop the underlay (the page itself shows through the mask) and frost
+     * whatever is underneath (blur shared with the quick-card glass setting). */
+    body.twx-overlay .twx-root::before { display: none; }
+    body.twx-overlay .twx-root {
+        backdrop-filter: blur(var(--twx-glass-blur, 8px));
+    }
     .twx-resize-handle {
         position: absolute; top: 0; bottom: 0; left: -4px; z-index: 3;
         width: 8px; cursor: col-resize; touch-action: none;
